@@ -10,4 +10,147 @@ Giving medication A or B is a one time decision -> we want it to be more general
 
 What of instead, we ask how much of medication A should we give every week? We want to see over a person's life how it influences, as they travel, work, etc.
 
+What can we do? Build time series? Do causual inference from a fixed time point? 
+
+Moving from a fixed time point from a type of sequential decision making. 
+
+The core is a MDP. 
+
+S - state
+A - action
+p(s_t+1 | a_t, s_t) - state transition
+r(r_t+1 | s, s|t+1, a_t) - rewaard distribution. Doesn't need to be random.
+
+In chess, transition is moving one piece. 
+
+Is the state probabilistic or deterministic? In chess, even though we can see the board, it is probabilistic because we don't know how the opponent will move. 
+
+E.g. if you're driving a car, one reward is how within the lines are we. 
+
+To map it back to medication:
+
+S - physiological state
+A - Drug A or B with the dosage
+Trans - How physiology changes with drug/dosage given
+Reward - Quality of life for day after medication, or something longterm, like a year after. 
+
+Markovian assumption says things only depend on previous time step, which is obviously overly simple.
+
+To fix, append previous states into one big one. All Markov. 
+
+Another problem is that we assume states are observed, what about states that are hidden? E.g. when driving, we don't know exactly what people are going to do. o
+
+Where we will have trouble is estimating effect of action on state transition, and the hidden state's effect on future actions.  
+
+Policy pi, weight gamma_t. Maximize reward.
+
+First, simulate policy, observe rewards, assuming finite time horizon T. 
+
+Our goal is to maximize an expectation over policies, and the expectation is over trajectory (sequence of actions)
+
+What's random?
+
+Policy actions. Transitions. And rewards. 
+
+To optimize policies, we can use score function gradients. 
+
+We can use VI and its gradients. 
+
+If you want a gradient with respect to an objective it's just the graident with resect to expectation, expectation is integral. PAss driv under integral. Use log gradient trick to get graient as expectation. 
+
+In practice, we take policy. Monte Carlo sample trajectories. Given these, compute approximation to the unbiased gradient. Maximize via stocahstic optimization. 
+
+Expectation of noisy gradient is equal to true gradient (slide 15, true is on slide 14).
+This is generic. 
+
+The only thing we are able to assume is computing the score function. 
+Score function is second equation on slide 15.
+
+High variance is possible, because policy is sampled. If too high, stoch opt will take too, too long. 
+
+Solution to this is Rao-Blackwellizing, which we will see. For now, can use baselines/  control variates. 
+
+Score function derivation is 0. 
+
+Subtracting the baseline b is equal. Slide 15. 
+
+These reduce variance somewhat. 
+
+Why even bother setting up MDP if we can use gradients? Samples needed is extremely large. Takes months of compute time. 
+
+Actor Critic Methods: 
+
+Slide 16
+
+We have:
+
+Definition of policy gradient line 1
+Expand out score function of policy (decomposed into sum of score functions for each time step)
+Then rewaards are just the sum. Sum of score function is t, rewards sum is t'
+Do conditional expectation on random variables, take expectation of outside, stil same.
+Break into two timesteps. 
+Break into all rewards after the action tthat we take, so we look at t' rewards bigger than t.
+contribution of gradient is 0, of rewards before. R_t as a function of S <= t is constant, pull it out of expectation, know E is 0. Only rewards after action matter for the gradient computation.
+
+Why did we do that? It's basically trying to move the parameters in a way that will make the future rewards better. If I can take this feature reward estimate, I can see states multiple times. 
+
+They both should provide information of future reward. Should help lower the variance. 
+Substitute directly. 
+
+Pull our future reward term as Expected future reward given we took an action in a state. This is the Q function. 
+Q depends on finite t. 
+
+Q function is future reward. We know gradient will be future reward, which depends on policy, because we sample fture actions based on policy. 
+
+We get a form for the gradient. Who gives Q function? We don't know yet. 
+
+What about variance? 
+
+If were to add in constants, would add to variance unncessarily. To control, we can have something called value function to reduce variance.
+
+Simply the Q function average in respect to policy. Score times value, take expectation, is 0. slide 20. 
+
+Another definition: Advantage function. 
+
+Trying to calculate: how much better is an action under the average action of the policy? 
+
+We know that the policy gradient is Q of pi times score function. We know policy is advantage times the score function. 
+
+How do you even get the advantage function (A^pi).
+
+AAC. Q equals reward at that time + value func for the next state. 
+
+So advantage A is Expectation of value of next state minus value of current state. 
+
+Monte Carlo, subsample trajectories to get Value function. 
+
+If we're going to run sim capital J times, why not take J gradients. 
+
+Summing future rewards has high variance.
+
+Can use regression. 
+
+Data is state and future reward. 
+
+Can minimize using f_phi, trying to get leftover rewards function.
+
+Still doesn't reuse information....
+
+
+Well, one way to do it then is to nnotice reward is instantaneous + value of next state. + avg reward for time point. 
+
+Take estimate from previous time step -> gives value function estimate, plug in next, try to make new estimate close to that. 
+
+Trading bias for variance - now variance small, bias higher. 
+
+
+
+1. Sample policy, see final reward.
+2. Update policy with gradients. Advantage is instantanous - Value
+3. Update value function with stochastic gradients. 
+
+Actor Critic with advantage functions. T learning is temporal difference. 
+
+Actor: policy
+Critc: advantage, q , value functions
 
