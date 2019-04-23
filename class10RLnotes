@@ -154,3 +154,109 @@ Actor Critic with advantage functions. T learning is temporal difference.
 Actor: policy
 Critc: advantage, q , value functions
 
+Policy gradients without advantage function is no critic. 
+
+Shared estimates of all future steps because some trajectories cross.
+
+Q function: how good each action is in a particular state in a policy.
+Can defiine new policy with the Q function. 
+
+Takes us to a sequence of algorithms, the basics of reinforcement learning. 
+Infinite time horizon. Discount factor is multiplicative.
+slide 26.
+
+Condition on states and actions, what is expected value of future reward? 
+
+Sum is infinite, so we'll pull out first term. Second still infinite, but gamma discounts it further down. 
+S' is drawn s' | s, a. 
+
+Quality is Value function, future reward given state S'. 
+
+Q is current reward + gamma*Expectation of (Value funct)
+
+This is fitteed value iteration. If state and action space is bounded, this will converge. Requires extra info: 
+
+1) store V of all possible states. Bad. 
+
+y_j is value of best action.
+Need knowledge of dynamics, reward function. 
+
+Fitted Q iteration.
+
+Where does data come from? Tuples (s,a) sends to s', also get a r. 
+
+Use Q to estimate value. 
+
+Compute value of best action, but can't so, take best value of Q function. 
+
+Make yj closer to q function estimate. 
+
+Doesn't require a current policy. 
+
+Some notes:
+
+How many yjs do you need? What if it's too large? Need to compute j. 
+
+Online Q learning. update Q, take action, see next state and reward. 
+
+yj on a single sample. Instead of min MSE, take a step per sample. Things can go wrong here. 
+
+People got stuck here for many years. 
+
+------
+
+What if the first action leads to bad reward, but is actually good? 
+
+Online Q iteration exploits too much. 
+
+How to correct for over-exploit?
+
+Epsilon-greedy - with some prob E, take another action. 
+Will see all options eventually. 
+
+Another way is entropy sampling, aka soft-Q learning. Instead of using Q directly, curb it nonlinearly. 
+If T sets to big, differences between Q are 0. Also explore. 
+
+What else??? 
+
+
+Keep in mind online Q is NOT a gradient. 
+
+Gradient of Q when doing argmax is not good, take yj as constant. 
+
+Because the samples are dependent on previous (not iid) supervised not happy.
+
+Store old samples in replay buffers, randomly sample from buffer. 
+
+Second Q fnction to fix gradient-ness. 
+
+New parameter phi-hat. Expected value function is now using old estimate of Q function. 
+
+any new guarantees? 
+
+No one contraction mapping because there a multiple sub contraction mappings. 
+
+---------------
+
+
+Deep Q learning. 
+
+Save phi as phi-hat. Keep fixed.
+
+collect big data set under some policy. New innovations are what policies should be used. 
+
+For K iterations, sample batch from buffer, update parameters. 
+
+Use deep networks for quality function. 
+
+Can diverge, no guarantees. Theory fails here too, most analyses say sample increase non asymptotically. 
+
+RL feels loosy goosy. 
+
+Narrow portion of space of winning. Need directed sampling. 
+
+Tools for monte carlo and variance drives whole problem .
+
+Does it converge? If so, dose it reasonab ly converge? 
+
+
