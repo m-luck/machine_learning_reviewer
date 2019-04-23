@@ -1,0 +1,13 @@
+Goal examples: winning a game of chess, getting money in stock market.
+
+We want to take actions to reach that goal.
+
+Probabilistic model state is setting of latent variables.
+chess is board. 
+Finance is returns.
+
+Giving medication A or B is a one time decision -> we want it to be more general, presumably under average treatment effect.
+
+What of instead, we ask how much of medication A should we give every week? We want to see over a person's life how it influences, as they travel, work, etc.
+
+
